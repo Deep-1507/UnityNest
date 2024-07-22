@@ -5,7 +5,7 @@ import axios from "axios";
 
 export function UserDetails() {
 
-    const [user,setUser] = useState([]);
+  const [user,setUser] = useState([]);
 
   useEffect( () => {
     const token = localStorage.getItem("token");

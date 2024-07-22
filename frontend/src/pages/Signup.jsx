@@ -3,6 +3,7 @@ import { Inputbox } from "../components/Inputbox";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useSnackbar } from 'notistack';
 
 export const Signup = () => {
 
@@ -10,7 +11,37 @@ export const Signup = () => {
   const [lastName, setLastname] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState('');
+  const { enqueueSnackbar } = useSnackbar();
   
+  const handleSignup = async () => {
+    try {
+      const response = await axios.post("http://localhost:3000/api/v1/user/signup", {
+        username,
+        firstName,
+        lastName,
+        password,
+      },
+      {
+        headers:{
+          "Content-Type":"application/json",
+        },
+      });
+
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+
+      enqueueSnackbar("Signup successful", { variant: "success" });
+
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1000);
+
+    } catch (err) {
+      setError("Failed to sign up.");
+    }
+  };
+
         
 
   const navigate = useNavigate();
@@ -38,26 +69,7 @@ export const Signup = () => {
             setPassword(e.target.value);
         }}/>
             <div className="pt-8">
-            <Button label={"Create Account"} onClick={ async () => {
-              const response = await axios.post("http://localhost:3000/api/v1/user/signup",{
-                username,
-                firstName,
-                lastName,
-                password,
-              },
-            {
-              headers:{
-                "Content-Type":"application/json",
-              },
-            });
-
-            console.log(response);
-            
-
-              localStorage.setItem("token", response.data.token)
-              alert("Signup Successfull");
-              navigate("/dashboard")
-            }} />
+            <Button label={"Create Account"} onClick={ handleSignup } />
             </div>
         </div>
 
