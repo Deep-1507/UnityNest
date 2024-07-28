@@ -4,7 +4,13 @@ const cors = require('cors')
 const port = 3000
 const rootRouter = require("./routes/index")
 
-app.use(cors());
+app.use(cors(
+{
+  origin:["https://UnityNest.vercel.app"],
+  methods:["POST","GET","PUT"],
+  credentials:true
+}
+));
 app.use(express.json());
 
 app.use("/api/v1",rootRouter);
