@@ -424,9 +424,8 @@ export function TaskStatus() {
           <Sidebar />
         </div>
         <div className="w-4/5 justify-between overflow-auto h-192 p-4">
-          <h2 className="text-center font-bold text-xl">
-           Total Tasks Assigned by you are as follows
-          </h2>
+
+          <div className="text-center pt-10 text-3xl font-semibold"> Total Tasks Assigned by you are as follows</div>
 
           <div className="pt-8 flex justify-center cursor-pointer">
             <button onClick={generateReport}>

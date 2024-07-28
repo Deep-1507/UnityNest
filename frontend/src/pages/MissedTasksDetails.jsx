@@ -98,9 +98,10 @@ export function MissedTasksDetails() {
           <Sidebar />
         </div>
         <div className="w-4/5 justify-between overflow-auto h-192 p-4">
-          <h2 className="text-center font-bold text-xl">
-            Tasks Missed by you are as follows
-          </h2>
+
+          <div className="text-center pt-10 text-3xl font-semibold"> Tasks Missed by you are as follows</div>
+
+          
           <div className="pt-14">
             {tasks.length === 0 ? (
               <p>No tasks found.</p>

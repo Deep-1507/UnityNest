@@ -71,6 +71,16 @@ export const Signup = () => {
             <div className="pt-8">
             <Button label={"Create Account"} onClick={ handleSignup } />
             </div>
+
+            <button
+            type="button"
+            className="w-full h-10 flex justify-center  text-black bg-gray-100 border-2 border-black hover:border-4 hover:border-customGreen focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2"
+            onClick={ () =>
+              navigate("/signin")
+            }
+          >
+            Alrady a user
+          </button>
         </div>
 
        

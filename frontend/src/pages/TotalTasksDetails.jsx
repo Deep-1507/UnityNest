@@ -12,7 +12,7 @@ export function TotalTasksDetails() {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [user,setUser] = useState([]);
+  const [user, setUser] = useState([]);
 
   const navigate = useNavigate();
 
@@ -46,23 +46,21 @@ export function TotalTasksDetails() {
       100% { transform: rotate(360deg); }
     }`;
 
-    
+  useEffect(() => {
+    const token = localStorage.getItem("token");
 
-    useEffect( () => {
-      const token = localStorage.getItem("token");
-  
-      axios.get("http://localhost:3000/api/v1/user/details",{
-        headers:{
-          Authorization:`Bearer ${token}`
-        }
+    axios
+      .get("http://localhost:3000/api/v1/user/details", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       })
-  
-      .then(response => {
+
+      .then((response) => {
         console.log("Response data: ", response.data);
         setUser(response.data.user);
-      })
-    },[])
-
+      });
+  }, []);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -129,7 +127,7 @@ export function TotalTasksDetails() {
 
   const getFontColor = (status, submissionDate) => {
     const backgroundColor = getBackgroundColor(status, submissionDate);
-    
+
     switch (backgroundColor) {
       case "bg-red-600":
         return "#FF0000"; // Red
@@ -171,73 +169,67 @@ export function TotalTasksDetails() {
   };
 
   const generateReport = () => {
-  const doc = new jsPDF();
-  const pageWidth = doc.internal.pageSize.width;
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.width;
 
-  // Set the initial position for the text
-  let yPosition = 10;
-  const pageHeight = doc.internal.pageSize.height;
+    // Set the initial position for the text
+    let yPosition = 10;
+    const pageHeight = doc.internal.pageSize.height;
 
-  // Function to add a new page if the current yPosition exceeds the page height
-  const addNewPage = () => {
-    doc.addPage();
-    yPosition = 10;
-  };
+    // Function to add a new page if the current yPosition exceeds the page height
+    const addNewPage = () => {
+      doc.addPage();
+      yPosition = 10;
+    };
 
-  // Function to check if the task details fit on the current page
-  const checkIfTaskFitsOnPage = (task) => {
-    const lineHeight = 10; // Height of each line
-    const linesNeeded = 8; // Number of lines needed for one task (adjust as needed)
-    const spaceNeeded = linesNeeded * lineHeight;
-    return yPosition + spaceNeeded <= pageHeight - 10; // Adjust for margin
-  };
+    // Function to check if the task details fit on the current page
+    const checkIfTaskFitsOnPage = (task) => {
+      const lineHeight = 10; // Height of each line
+      const linesNeeded = 8; // Number of lines needed for one task (adjust as needed)
+      const spaceNeeded = linesNeeded * lineHeight;
+      return yPosition + spaceNeeded <= pageHeight - 10; // Adjust for margin
+    };
 
-  // Function to calculate the height of the task details section
-  const getTaskSectionHeight = () => {
-    const lineHeight = 10; // Height of each line
-    const linesNeeded = 8; // Number of lines needed for one task (adjust as needed)
-    return linesNeeded * lineHeight;
-  };
+    // Function to calculate the height of the task details section
+    const getTaskSectionHeight = () => {
+      const lineHeight = 10; // Height of each line
+      const linesNeeded = 8; // Number of lines needed for one task (adjust as needed)
+      return linesNeeded * lineHeight;
+    };
 
-  // Add title
-  loadImageAsBase64("../src/images/Header.png", (base64Image) => {
-    const imgWidth = 190; // Adjust the width as needed
-    const imgHeight = 40; // Adjust the height as needed
-    doc.addImage(base64Image, "JPEG", 10, yPosition, imgWidth, imgHeight);
-    yPosition += imgHeight + 5; // Adjust yPosition after the image
+    // Add title
+    loadImageAsBase64("../src/images/Header.png", (base64Image) => {
+      const imgWidth = 190; // Adjust the width as needed
+      const imgHeight = 40; // Adjust the height as needed
+      doc.addImage(base64Image, "JPEG", 10, yPosition, imgWidth, imgHeight);
+      yPosition += imgHeight + 5; // Adjust yPosition after the image
 
-    doc.setDrawColor(0); // Set line color to black
-    doc.line(10, yPosition, doc.internal.pageSize.width - 10, yPosition);
-    yPosition += 10; // Add space after the line
+      doc.setDrawColor(0); // Set line color to black
+      doc.line(10, yPosition, doc.internal.pageSize.width - 10, yPosition);
+      yPosition += 10; // Add space after the line
 
+      doc.setFontSize(18); // Increase font size for title
+      doc.setFont("helvetica", "bold"); // Make title bold
 
-    doc.setFontSize(18); // Increase font size for title
-    doc.setFont("helvetica", "bold"); // Make title bold
+      const title = "Tasks Report";
+      const titleWidth = doc.getTextWidth(title);
+      const titleX = (pageWidth - titleWidth) / 2; // Center alignment
 
-    const title = "Tasks Report";
-    const titleWidth = doc.getTextWidth(title);
-    const titleX = (pageWidth - titleWidth) / 2; // Center alignment
+      doc.text(title, titleX, yPosition);
+      yPosition += 5;
 
-    doc.text(title, titleX, yPosition);
-    yPosition += 5;
+      doc.setDrawColor(0); // Set line color to black
+      doc.line(10, yPosition, doc.internal.pageSize.width - 10, yPosition);
+      yPosition += 5; // Add space after the line
 
-    doc.setDrawColor(0); // Set line color to black
-    doc.line(10, yPosition, doc.internal.pageSize.width - 10, yPosition);
-    yPosition += 5; // Add space after the line
+      doc.setFont("helvetica", "bold");
+      doc.text("Id:", 15, yPosition + 10);
+      doc.setFont("helvetica", "normal");
+      doc.text(` ${user._id}`, doc.getTextWidth("Id:") + 17, yPosition + 10);
 
+      yPosition += 10;
 
-    doc.setFont("helvetica", "bold");
-    doc.text("Id:", 15, yPosition + 10);
-    doc.setFont("helvetica", "normal");
-    doc.text(
-      ` ${user._id}`,
-      doc.getTextWidth("Id:") + 17,
-      yPosition + 10
-    );
-
-    yPosition += 10;
-
-    doc.setFont("helvetica", "bold");
+      doc.setFont("helvetica", "bold");
       doc.text("Username:", 15, yPosition + 10);
       doc.setFont("helvetica", "normal");
       doc.text(
@@ -280,131 +272,127 @@ export function TotalTasksDetails() {
       );
 
       yPosition += 20;
-      
+
       doc.setDrawColor(0); // Set line color to black
       doc.line(10, yPosition, doc.internal.pageSize.width - 10, yPosition);
       yPosition += 10; // Add space after the line
 
+      tasks.forEach((task) => {
+        // Check if the task details fit on the current page, if not add a new page
+        if (!checkIfTaskFitsOnPage(task)) {
+          addNewPage();
+        }
 
+        // Calculate the height of the task section
+        // const taskSectionHeight = getTaskSectionHeight();
 
-    tasks.forEach((task) => {
-      // Check if the task details fit on the current page, if not add a new page
-      if (!checkIfTaskFitsOnPage(task)) {
-        addNewPage();
-      }
+        // Draw the border around the task details section
+        // doc.rect(10, yPosition, doc.internal.pageSize.width - 20, taskSectionHeight);
 
-      // Calculate the height of the task section
-      // const taskSectionHeight = getTaskSectionHeight();
+        const status = `${getStatus(task.status, task.submissiondate)}`;
+        const fontColor = getFontColor(task.status, task.submissiondate);
 
-      // Draw the border around the task details section
-      // doc.rect(10, yPosition, doc.internal.pageSize.width - 20, taskSectionHeight);
+        doc.setFont("helvetica", "bold");
+        doc.text("Task ID:", 15, yPosition + 10);
+        doc.setFont("helvetica", "normal");
+        doc.text(
+          ` ${task.taskid}`,
+          doc.getTextWidth("Task ID:") + 17,
+          yPosition + 10
+        );
 
-      const status = `${getStatus(task.status, task.submissiondate)}`;
-      const fontColor = getFontColor(task.status, task.submissiondate);
+        yPosition += 10;
 
-      doc.setFont("helvetica", "bold");
-      doc.text("Task ID:", 15, yPosition + 10);
-      doc.setFont("helvetica", "normal");
-      doc.text(
-        ` ${task.taskid}`,
-        doc.getTextWidth("Task ID:") + 17,
-        yPosition + 10
-      );
+        doc.setFont("helvetica", "bold");
+        doc.text("Submission Date:", 15, yPosition + 10);
+        doc.setFont("helvetica", "normal");
+        doc.text(
+          `  ${task.submissiondate}`,
+          doc.getTextWidth("Submission Date:") + 17,
+          yPosition + 10
+        );
 
-      yPosition += 10;
+        yPosition += 10;
 
-      doc.setFont("helvetica", "bold");
-      doc.text("Submission Date:", 15, yPosition + 10);
-      doc.setFont("helvetica", "normal");
-      doc.text(
-        `  ${task.submissiondate}`,
-        doc.getTextWidth("Submission Date:") + 17,
-        yPosition + 10
-      );
+        doc.setFont("helvetica", "bold");
+        doc.text("Task Status:", 15, yPosition + 10);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(fontColor);
+        doc.text(
+          `  ${status}`,
+          doc.getTextWidth("Task Status:") + 17,
+          yPosition + 10
+        );
 
-      yPosition += 10;
+        yPosition += 10;
 
-      doc.setFont("helvetica", "bold");
-      doc.text("Task Status:", 15, yPosition + 10);
-      doc.setFont("helvetica", "normal");
-      doc.setTextColor(fontColor);
-      doc.text(
-        `  ${status}`,
-        doc.getTextWidth("Task Status:") + 17,
-        yPosition + 10
-      );
+        doc.setTextColor("black");
+        doc.setFont("helvetica", "bold");
+        doc.text("Assigned By:", 15, yPosition + 10);
+        doc.setFont("helvetica", "normal");
+        doc.text(
+          `  ${task.taskassignedby}`,
+          doc.getTextWidth("Assigned By:") + 17,
+          yPosition + 10
+        );
 
-      yPosition += 10;
+        yPosition += 10;
 
-      doc.setTextColor("black");
-      doc.setFont("helvetica", "bold");
-      doc.text("Assigned By:", 15, yPosition + 10);
-      doc.setFont("helvetica", "normal");
-      doc.text(
-        `  ${task.taskassignedby}`,
-        doc.getTextWidth("Assigned By:") + 17,
-        yPosition + 10
-      );
+        // doc.setFont("helvetica", "bold");
+        // doc.text("Assigned To:", 15, yPosition + 10);
+        // doc.setFont("helvetica", "normal");
+        // doc.text(
+        //   `  ${task.taskassignedto}`,
+        //   doc.getTextWidth("Assigned To:") + 17,
+        //   yPosition + 10
+        // );
 
-      yPosition += 10;
+        // yPosition += 10;
 
-      // doc.setFont("helvetica", "bold");
-      // doc.text("Assigned To:", 15, yPosition + 10);
-      // doc.setFont("helvetica", "normal");
-      // doc.text(
-      //   `  ${task.taskassignedto}`,
-      //   doc.getTextWidth("Assigned To:") + 17,
-      //   yPosition + 10
-      // );
+        doc.setFont("helvetica", "bold");
+        doc.text("Task:", 15, yPosition + 10);
+        doc.setFont("helvetica", "normal");
+        doc.text(
+          `  ${task.task}`,
+          doc.getTextWidth("Task:") + 17,
+          yPosition + 10
+        );
 
-      // yPosition += 10;
+        yPosition += 10;
 
-      doc.setFont("helvetica", "bold");
-      doc.text("Task:", 15, yPosition + 10);
-      doc.setFont("helvetica", "normal");
-      doc.text(
-        `  ${task.task}`,
-        doc.getTextWidth("Task:") + 17,
-        yPosition + 10
-      );
+        doc.setFont("helvetica", "bold");
+        doc.text("Submission Date:", 15, yPosition + 10);
+        doc.setFont("helvetica", "normal");
+        doc.text(
+          `  ${task.submissiondate}`,
+          doc.getTextWidth("Submission Date:") + 17,
+          yPosition + 10
+        );
 
-      yPosition += 10;
+        yPosition += 10;
 
-      doc.setFont("helvetica", "bold");
-      doc.text("Submission Date:", 15, yPosition + 10);
-      doc.setFont("helvetica", "normal");
-      doc.text(
-        `  ${task.submissiondate}`,
-        doc.getTextWidth("Submission Date:") + 17,
-        yPosition + 10
-      );
+        doc.setFont("helvetica", "bold");
+        doc.text("Submitted Details of the Task:", 15, yPosition + 10);
+        doc.setFont("helvetica", "normal");
+        doc.text(
+          `  ${task.message}`,
+          doc.getTextWidth("Submitted Details of the Task:") + 20,
+          yPosition + 10
+        );
 
-      yPosition += 10;
+        yPosition += 20; // Add more space between different tasks
 
-      doc.setFont("helvetica", "bold");
-      doc.text("Submitted Details of the Task:", 15, yPosition + 10);
-      doc.setFont("helvetica", "normal");
-      doc.text(
-        `  ${task.message}`,
-        doc.getTextWidth("Submitted Details of the Task:") + 20,
-        yPosition + 10
-      );
+        // Draw a line after the task details
+        doc.setDrawColor(0); // Set line color to black
+        doc.line(10, yPosition, doc.internal.pageSize.width - 10, yPosition);
+        yPosition += 10; // Add space after the line
+      });
 
-      yPosition += 20; // Add more space between different tasks
-
-       // Draw a line after the task details
-       doc.setDrawColor(0); // Set line color to black
-       doc.line(10, yPosition, doc.internal.pageSize.width - 10, yPosition);
-       yPosition += 10; // Add space after the line
-
+      const filename = `${user.firstName} ${user.lastName}_Tasks_Report.pdf`;
+      // Save the PDF
+      doc.save(filename);
     });
-
-    const filename = `${user.firstName} ${user.lastName}_Tasks_Report.pdf`;
-    // Save the PDF
-    doc.save(filename);
-  });
-};
-
+  };
 
   return (
     <div>
@@ -416,9 +404,10 @@ export function TotalTasksDetails() {
         </div>
         <div className="w-4/5 justify-between overflow-auto h-192 p-4">
           <div></div>
-          <h2 className="text-center font-bold text-xl">
+
+          <div className="text-center pt-10 text-3xl font-semibold">
             Total Tasks Assigned to you are as follows
-          </h2>
+          </div>
           <div className="pt-8 flex justify-center cursor-pointer">
             <button onClick={generateReport}>
               <div

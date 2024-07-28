@@ -46,7 +46,7 @@ export const Users = () => {
 
   return (
     <div>
-      <div>Subordinates</div>
+      <div className="text-center pt-10 text-3xl font-semibold">Subordinates</div>
 
       <div>
         <Inputbox

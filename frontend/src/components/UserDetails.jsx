@@ -35,13 +35,21 @@ export function UserDetails() {
 
 const User = ({ user }) => {
     return (
-      <div className="grid grid-cols-1 w-full justify-between">
-        <h1 className="grid text-center text-4xl font-Anton pt-10">Welcome!</h1>
-        <h2 className="grid text-center text-xl font-Anton">User Details</h2>
-        <p><strong>Name:</strong> {user.firstName} {user.lastName}</p>
-        <p><strong>Username:</strong> {user.username}</p>
-        <p><strong>Position:</strong> {user.position}</p>
-        <p><strong>Position Seniority Index:</strong> {user.positionseniorityindex}</p>
+      <div className=" flex flex-col items-center w-full pt-16">
+        <div className=" text-7xl font-bold">Welcome!</div>
+
+        <div className="flex flex-col items-center mt-16 p-8 shadow-xl shadow-customGreen rounded-lg">
+        <div className="text-4xl font-semibold  underline decoration-customGreen">User Details</div>
+        <div className="flex flex-col justify-between text-justify pt-8 ">
+        <p className="pt-4"><strong>UID:</strong> {user._id}</p>
+        <p className="pt-4"><strong>Name:</strong> {user.firstName} {user.lastName}</p>
+        <p className="pt-4"><strong>Username:</strong> {user.username}</p>
+        <p className="pt-4"><strong>Position:</strong> {user.position}</p>
+        <p className="pt-4"><strong>Position Seniority Index:</strong> {user.positionseniorityindex}</p>
+        </div>
+        
+        </div>
+       
       </div>
     );
   };
